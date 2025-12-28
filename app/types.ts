@@ -1,11 +1,21 @@
-import { Prisma } from "@/lib/generated/prisma/client";
+
+
+
+import { Image, Prisma } from "@/lib/generated/prisma/client";
 import { ErrorInfo, ReactNode } from "react";
 
 export type ProductsWithImages = Prisma.ProductGetPayload<{include: { images: true };}>;
 
 export type ProductsWithCartAndImages = Prisma.CartItemGetPayload<{
-  include: { images: true, product: true };
-}>;
+  include: {
+    product: {
+      include: {
+        images: true
+      }
+    }
+  }
+}>
+
 
 export interface ProductTable {
   products:ProductsWithImages[]
@@ -48,9 +58,8 @@ export interface OrderProducts {
   order: string
   quantity:number
   address:string
-  extra_things:string
+  extra_things?:string
 }
-
 
 
 export type Products = {
@@ -84,7 +93,7 @@ export type OrderPayload={
     title: string
     price: number
     quantity: number
-    image: string
+    image?: string
 }[]
   totalPrice: number
   createdAt: Date

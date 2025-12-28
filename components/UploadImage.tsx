@@ -19,6 +19,8 @@ export const UploadImage: FC<UploadImageProps> = ({ productId, onUploadTemp }) =
   const [file, setFile] = useState<File | null>(null);
   const [images, setImages] = useState<ProductsWithImages[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [tempImages, setTempImages] = useState<File[]>([]);
+
 
   const handleChangeFile = (ev: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = ev.target.files?.[0];
@@ -76,13 +78,13 @@ export const UploadImage: FC<UploadImageProps> = ({ productId, onUploadTemp }) =
   };
 
   const handleDelete = async (imageId?: string, file?: File) => {
-  if (file && !productId) {
-    if (onUploadTemp) onUploadTemp(
-      temp => temp.filter(f => f !== file)
-    );
-    toast.success("Temporary image removed ✅");
-    return;
-  }
+ if (file && !productId) {
+  const updated = tempImages.filter(f => f !== file);
+  onUploadTemp?.(updated);
+  toast.success("Temporary image removed ✅");
+  return;
+}
+
 
   if (!imageId || !productId) return;
 
@@ -113,7 +115,7 @@ export const UploadImage: FC<UploadImageProps> = ({ productId, onUploadTemp }) =
         {images?.map(item => (
           <div className="relative group" key={item.id}>
             <CircleX onClick={() => handleDelete(item.id)} className="absolute top-1 right-1 text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"/>
-            <Image width={100} height={100} alt="product image" src={item.image} className="mt-4 mx-auto rounded-md"/>
+            <Image width={100} height={100} alt="product image" src={item.images?.[0]?.image ?? ''} className="mt-4 mx-auto rounded-md"/>
           </div>
         ))}
       </div>

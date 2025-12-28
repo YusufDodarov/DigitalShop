@@ -6,5 +6,6 @@ export default function Loading() {
     <Spinner/>
     <p className="mt-4 text-lg md:text-2xl font-semibold animate-pulse">Loading, please wait...</p>
     </div>
-    </div> )
+    </div> 
+  )
 }

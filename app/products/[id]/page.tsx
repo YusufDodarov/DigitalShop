@@ -4,11 +4,22 @@ import { ProductsWithImages } from '@/app/types'
 import customMetadata from '@/lib/metadata'
 import { Metadata } from 'next'
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const data = await params
-  const { id } = data
-  const product = await getProductById(id) as ProductsWithImages | null
-  if(product) return customMetadata({title: product.title,description: product.description,images: product.images,})
+export async function generateMetadata(
+  { params }: { params: { id: string } }
+): Promise<Metadata> {
+  const product = await getProductById(params.id) as ProductsWithImages | null
+  if (!product) {
+    return {
+      title: 'Product not found',
+      description: 'This product does not exist',
+    }
+  }
+  
+  return customMetadata({
+    title: product.title,
+    description: product.description ?? '',
+    images: product.images,
+  })
 }
 
 

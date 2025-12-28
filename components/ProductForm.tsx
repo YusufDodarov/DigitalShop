@@ -16,18 +16,19 @@ import { UploadImage } from './UploadImage';
 import { uploadImage } from '@/app/services/image';
 import { useState } from 'react';
 
-const ProductForm = (props) => {
+const ProductForm = (props:any) => {
+  console.log(props)
   const { product } = props;
   const {register,handleSubmit,setValue}=useForm<Product>()
   const [tempImages, setTempImages] = useState<File[]>([]);
  const onSubmitForm = async (data: Product) => {
   try {
     const _product = {
-id: product?.id,
-...data,
-price: Number(data.price || 0),
-quantity: Number(data.quantity || 0),
-category: data.category || product?.category,
+      ...data,
+      id: product?.id,
+      price: Number(data.price || 0),
+      quantity: Number(data.quantity || 0),
+      category: data.category || product?.category,
     };
     const savedProduct = await upsertProduct(_product);
 
@@ -95,13 +96,13 @@ category: data.category || product?.category,
                <div>
           <CardFooter>
             <UploadImage
-              productId={product?.id} 
-              onUploadTemp={(files) => setTempImages(prev => [...prev, ...files])}
+              productId={product?.id}
+              onUploadTemp={(files) => setTempImages(files)}
             />
           </CardFooter>
         </div>
-            </Card>
-           </div>
+        </Card>
+      </div>
   );
 };
 

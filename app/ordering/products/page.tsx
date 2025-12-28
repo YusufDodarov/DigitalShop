@@ -2,14 +2,14 @@
 
 import { useCart } from "@/app/hooks/useCart";
 import { Button } from "@/components/ui/button";
-import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BrushCleaningIcon } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { OrderPayload, OrderProducts, ProductsWithCartAndImages } from "@/app/types";
+import {   OrderPayload, ProductsWithCartAndImages } from "@/app/types";
 import { useTheme } from "next-themes";
+import { InferType } from "yup";
 import { Textarea } from "@/components/ui/textarea";
 import * as yup from "yup"
 import {yupResolver} from '@hookform/resolvers/yup'
@@ -19,27 +19,24 @@ import Image from "next/image";
 
 function Order() { 
   const {user}=useUser()
-    const schema=yup.object().shape({
+    const schema =yup.object().shape({
        name: yup.string().required("Name is required").matches(/^[A-Z][a-zA-Z]*$/, "First letter must be capital, single word only"),
        surname: yup.string().required("Surname is required").matches(/^[A-Z][a-zA-Z]*$/, "First letter must be capital, single word only"),
        phone: yup.string().required("Phone is required").matches(/^\d{9,}$/, "Phone must have at least 10 digits"),
        address: yup.string().required("Address is required"),
-       extra_things: yup.string().optional(),
+        extra_things: yup.string().nullable(),
     })
       const { cart, isLoading, removeItem,decreaseQuantity,increaseQuantity, createOrder } = useCart();
     
-  const { register, handleSubmit, reset ,formState:{errors}} = useForm<OrderProducts>({
-    resolver:yupResolver(schema),
-    defaultValues: {
-    name: "",
-    surname: "",
-    phone: '',
-    address: undefined,
-    extra_things: "",
-  },
-  });
+      type OrderFormValues = InferType<typeof schema>;
+    
+const { register, handleSubmit, reset, formState:{ errors } } =useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {name: "",surname: "",phone: "",address: "",extra_things: ""},
+});
 
-  const onSubmit = (data: OrderProducts) => {
+
+  const onSubmit = (data: OrderFormValues) => {
     if(!user||!cart) return 
     
     const orderPayload:OrderPayload={
@@ -50,15 +47,16 @@ function Order() {
         surname:data.surname,
         phone:data.phone,
         address:data.address,
-        extra_things:data.extra_things
+       extra_things: data.extra_things || undefined
       },
       products: cart.map(el => ({
          productId: el.product!.id,
          title: el.product!.title,
-         price: el.product!.price,
+         price: el.product?.price??0,
          quantity: el.quantity,
+          image: "",
       })),
-      totalPrice:cart.reduce((acc,el)=>acc+el.quantity*el.product?.price,0), 
+      totalPrice:cart.reduce((acc,el)=>acc+el.quantity*(el.product?.price??0), 0), 
       createdAt: new Date()
     }
     createOrder.mutate(orderPayload)
@@ -118,9 +116,8 @@ function Order() {
               <div className="flex gap-4 flex-1">
                 <div>
                   {item.product?.images?.[0]?.image ? (
-                    <Image src={item.product.images[0].image} alt={item.product.title} width={80} height={80} className="object-cover rounded-md"
-                    />
-                  ) : ( <div  className="w-20 h-20  rounded-md flex items-center justify-center text-xs ">No Image</div>)}
+                    <Image src={item.product.images[0].image} alt={item.product.title} width={80} height={80} className="object-cover rounded-md"/>
+                    ) : (<div className="w-20 h-20 rounded-md flex items-center justify-center text-xs">No Image</div>)}
                 </div>
                 
                 <div className="flex-1">
@@ -141,7 +138,7 @@ function Order() {
       )}
     </div>
   </div>
-</div>
+  </div>
   );
 }
 export default Order;

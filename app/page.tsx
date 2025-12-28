@@ -16,7 +16,7 @@ export default async function Home() {
         <h1>Digital Shop</h1>
       </div>
     </div>
-    <Product isAdmin={isAdmin} />
+    <Product isAdmin={Boolean(isAdmin)} />
    </div>
   );
 }

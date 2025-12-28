@@ -21,6 +21,5 @@ export default async function Auth() {
       </div>
     );
   } catch (error) {
-    console.log(error)
     return <div></div>}
 }
