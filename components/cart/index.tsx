@@ -16,7 +16,6 @@ export default function CartDropdown({isAdmin}:{isAdmin:boolean}) {
   const router=useRouter()
   const { cart, isLoading, removeItem } = useCart();
   
-  
   return (
     <div className="w-5 h-5 transition-colors duration-200">
       <DropdownMenu>

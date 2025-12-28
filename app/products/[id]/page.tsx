@@ -8,13 +8,14 @@ export async function generateMetadata(
   { params }: { params: { id: string } }
 ): Promise<Metadata> {
   const product = await getProductById(params.id) as ProductsWithImages | null
+
   if (!product) {
     return {
       title: 'Product not found',
       description: 'This product does not exist',
     }
   }
-  
+
   return customMetadata({
     title: product.title,
     description: product.description ?? '',
