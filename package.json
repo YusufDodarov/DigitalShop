@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "install-build": "npm install --legacy-peer-deps && npm run build"
+    "install-build": "npm install --legacy-peer-deps && npm run build",
+    "generate": "npx prisma generate",
+    "migrate": "npx prisma migrate dev",
+    "studio": "npx prisma studio"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.2",
